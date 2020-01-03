@@ -182,7 +182,7 @@ where
         }
     }
 
-    fn cause(&self) -> Option<&StdError> {
+    fn cause(&self) -> Option<&dyn StdError> {
         match *self {
             Error::Operation { ref error, .. } => Some(error),
             Error::Internal(_) => None,
@@ -194,7 +194,7 @@ where
 mod tests {
     use std::time::Duration;
 
-    use super::delay::{Exponential, Fixed, NoDelay, Range};
+    use super::delay::{Exponential, Fixed, NoDelay};
     use super::opresult::OperationResult;
     use super::{retry, Error};
 
@@ -296,22 +296,6 @@ mod tests {
             Some(n) if n == 2 => Ok(n),
             Some(_) => Err("not 2"),
             None => Err("not 2"),
-        })
-        .unwrap();
-
-        assert_eq!(value, 2);
-    }
-
-    #[test]
-    fn succeeds_with_ranged_delay() {
-        let mut collection = vec![1, 2].into_iter();
-
-        let value = retry(Range::from_millis_exclusive(1, 10), || {
-            match collection.next() {
-                Some(n) if n == 2 => Ok(n),
-                Some(_) => Err("not 2"),
-                None => Err("not 2"),
-            }
         })
         .unwrap();
 
