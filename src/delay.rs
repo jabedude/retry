@@ -117,8 +117,8 @@ impl Iterator for Fixed {
     type Item = Duration;
 
     fn next(&mut self) -> Option<Duration> {
-        let current = self.max - 1;
-        if current <= 0 {
+        self.max = self.max - 1;
+        if self.max <= 0 {
             None
         } else {
             Some(self.duration)
