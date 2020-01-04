@@ -100,13 +100,15 @@ fn fibonacci_saturated() {
 #[derive(Debug)]
 pub struct Fixed {
     duration: Duration,
+    max: usize,
 }
 
 impl Fixed {
     /// Create a new `Fixed` using the given duration in milliseconds.
-    pub fn from_millis(millis: u64) -> Self {
+    pub fn from_millis(millis: u64, max: usize) -> Self {
         Fixed {
             duration: Duration::from_millis(millis),
+            max: max,
         }
     }
 }
@@ -115,17 +117,22 @@ impl Iterator for Fixed {
     type Item = Duration;
 
     fn next(&mut self) -> Option<Duration> {
-        Some(self.duration)
-    }
-}
-
-impl From<Duration> for Fixed {
-    fn from(delay: Duration) -> Self {
-        Self {
-            duration: delay.into(),
+        let current = self.max - 1;
+        if current <= 0 {
+            None
+        } else {
+            Some(self.duration)
         }
     }
 }
+
+//impl From<Duration> for Fixed {
+//    fn from(delay: Duration) -> Self {
+//        Self {
+//            duration: delay.into(),
+//        }
+//    }
+//}
 
 /// Each retry happens immediately without any delay.
 #[derive(Debug)]
